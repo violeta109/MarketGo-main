@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarketGo | Mercado digital</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="script.js"></script>
+    
+    </head>
+
+    <!-- LOGIN / REGISTRO -->
+    <div id="auth" class="auth">
+      <div class="auth-card">
+        <div class="brand">
+          <div class="brand-icon">🛒</div>
+          <h1>Market<span>Go</span></h1>
+
+        </div>
+        <div class="tabs"><button id="tabLogin" class="active"
+            onclick="showAuth('login')">Iniciar sesión</button><button
+            id="tabRegister"
+            onclick="showAuth('register')">Registrarme</button></div>
+        <div id="authMsg"></div>
+        <form id="loginForm" onsubmit="login(event)">
+          <div class="field"><label>Correo o identificación</label><input
+              id="loginId" required
+              placeholder="correo@ejemplo.com o DNI"></div>
+          <div class="field"><label>Contraseña</label><input id="loginPass"
+              type="password" required
+              placeholder="••••••••"></div>
+          <button class="primary full">Ingresar</button>
+
+        </form>
+        <form id="registerForm" class="hidden" onsubmit="register(event)">
+          <div class="grid2">
+            <div class="field"><label>Identificación</label><input id="regDni"
+                required></div>
+            <div class="field"><label>Nombre</label><input id="regName"
+                required></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>Apellido</label><input id="regLast"
+                required></div>
+            <div class="field"><label>Correo</label><input id="regEmail"
+                type="email" required></div>
+          </div>
+          <div class="field"><label>Contraseña</label><input id="regPass"
+              type="password" required minlength="4"></div>
+          <div class="field"><label>Rol</label><select id="regRole">
+              <option value="CLIENTE">Cliente</option>
+              <option value="EMPLEADO">Empleado</option>
+              <option value="ADMIN">Administrador</option>
+            </select></div>
+          <button class="primary full">Crear cuenta</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- APP -->
+    <div id="app" class="app hidden">
+      <header class="top">
+        <div class="top-brand">
+          <div class="brand-icon">🛒</div>
+          <div><strong>Market<span>Go</span></strong><small>
+
+            </small></div>
+        </div>
+        <div class="top-search"><input id="globalSearch"
+            placeholder="Buscar productos por nombre o código"
+            onkeydown="if(event.key==='Enter')searchProducts()"><button
+            onclick="searchProducts()">⌕</button></div>
+        <div class="top-actions"><button class="icon-btn"
+            onclick="openModule('cart')">🛒<i class="badge"
+              id="cartCount">0</i></button>
+          <div class="user-mini"><strong id="userName">Usuario</strong><span
+              id="userRole">CLIENTE</span></div>
+        </div>
+      </header>
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="menu-title"></div>
+          <div id="sideMenu" class="side-menu"></div><button
+            class="side-btn logout" onclick="logout()">🚪 Cerrar
+            sesión</button>
+        </aside>
+        <main class="content">
+
+          <section id="mod-home" class="module active">
+            <div class="page-head">
+              <div>
+                <h2>¡Bienvenido, <span id="welcomeName">usuario</span>!</h2>
+
+              </div>
+            </div>
+            <div class="hero">
+              <div class="hero-copy">
+                <h1>Encuentra
+                  <span>todo</span> lo que necesitas en un solo
+                  lugar
+                </h1>
+                <button class="primary"
+                  onclick="openModule('products')">Explorar
+                  productos →</button>
+                <div class="trust">
+                  <div><span>✓</span>Compras
+                    seguras</div>
+                  <div><span>✓</span>Variedad de productos</div>
+                  <div><span>✓</span>Ofertas
+                    especiales</div>
+                </div>
+              </div>
+              <div class="hero-art">🛍️📱</div>
+            </div>
+            <div class="section">
+              <div class="section-head">
+                <h3>Categorías</h3><button class="link"
+                  onclick="openModule('categories')">Ver todas
+                  →</button>
+              </div>
+              <div id="homeCategories" class="cards"></div>
+            </div>
+            <div class="section">
+              <div class="section-head">
+                <h3>Ofertas
+                  especiales</h3><button class="link"
+                  onclick="openModule('offers')">Ver más →</button>
+              </div>
+              <div id="homeOffers" class="offer-grid"></div>
+            </div>
+          </section>
+
+          <section id="mod-categories" class="module">
+            <div class="page-head">
+              <div>
+                <h2>Todas las categorías</h2>
+                <p>Selecciona
+                  una categoría para ver sus productos.</p>
+              </div><button class="export" onclick="exportCategories()">⬇
+                Excel</button>
+            </div>
+            <div id="allCategories" class="cards"></div>
+          </section>
+
+          <section id="mod-products" class="module">
+            <div class="page-head">
+              <div>
+                <h2>Catálogo de productos</h2>
+                <p>Selecciona
+                  un producto y agrégalo a tu carrito.</p>
+              </div>
+            </div>
+            <div class="filters"><input id="productSearch"
+                placeholder="Nombre o código..."
+                oninput="renderProducts()"><select id="categoryFilter"
+                onchange="renderProducts()"></select><select
+                id="supplierFilter" onchange="renderProducts()"></select><button
+                class="primary"
+                onclick="renderProducts()">🔎 Buscar</button><button
+                class="secondary"
+                onclick="clearFilters()">Limpiar</button></div>
+            <div id="productGrid" class="product-grid"></div>
+          </section>
+
+          <section id="mod-offers" class="module">
+            <div class="page-head">
+              <div>
+                <h2>Ofertas disponibles</h2>
+                <p>Productos
+                  seleccionados con descuentos especiales.</p>
+              </div>
+            </div>
+            <div id="allOffers" class="offer-grid"></div>
+          </section>
+
+          <section id="mod-cart" class="module">
+            <div class="page-head">
+              <div>
+                <h2>Mi carrito</h2>
+                <p>Revisa tus productos
+                  antes de confirmar.</p>
+              </div>
+            </div>
+            <div id="cartPanel"></div>
+          </section>
+
+          <section id="mod-orders" class="module">
+            <div class="page-head">
+              <div>
+                <h2>Historial de pedidos</h2>
+                <p>Revisa el
+                  detalle de tus compras.</p>
+              </div><button class="primary"
+                onclick="openModule('products')">Comprar
+                productos</button>
+            </div>
+            <div class="stats">
+              <div class="stat"><small>Total de pedidos</small><strong
+                  id="statTotalOrders">0</strong></div>
+              <div class="stat"><small>Pendientes</small><strong
+                  id="statPending">0</strong></div>
+              <div class="stat"><small>En
+                  proceso</small><strong id="statProcess">0</strong></div>
+              <div class="stat"><small>Entregados</small><strong
+                  id="statDelivered">0</strong></div>
+            </div>
+            <div class="panel">
+              <div class="toolbar"><input id="orderSearch"
+                  placeholder="Código o fecha..."
+                  oninput="renderOrders()"><select id="orderStatus"
+                  onchange="renderOrders()">
+                  <option value>Todos los
+                    estados</option>
+                  <option>Pendiente</option>
+                  <option>Enviado</option>
+                  <option>Entregado</option>
+                  <option>Cancelado</option>
+                </select></div>
+            </div>
+            <div id="ordersList"></div>
+          </section>
+
+
+          <section id="mod-dashboard" class="module">
+            <div class="admin-hero"><div><h1>Panel de control operativo</h1><p>Visión general de MarketGo: inventario, compras, proveedores y actividad del negocio en tiempo real dentro del navegador.</p></div><div class="action-row"><button class="primary" onclick="openModule('purchases')">+ Nueva orden de compra</button><button class="secondary" onclick="openModule('admin-products')">Gestionar inventario</button></div></div>
+            <div class="kpi-grid">
+              <div class="kpi"><small>Valor del inventario</small><strong id="kpiInventory">S/ 0.00</strong><span>Precio de compra × stock</span></div>
+              <div class="kpi"><small>Productos activos</small><strong id="kpiProducts">0</strong><span id="kpiLowText">0 con stock bajo</span></div>
+              <div class="kpi"><small>Órdenes de compra</small><strong id="kpiPurchases">0</strong><span id="kpiPendingText">0 pendientes</span></div>
+              <div class="kpi"><small>Proveedores activos</small><strong id="kpiSuppliers">0</strong><span>Relación comercial</span></div><div class="kpi"><small>Clientes registrados</small><strong id="kpiClients">0</strong><span>Base comercial</span></div>
+            </div>
+            <div class="dashboard-grid">
+              <div class="panel"><div class="panel-title"><h3>Alertas de inventario</h3><button class="link" onclick="openModule('admin-products')">Ver inventario →</button></div><div id="lowStockList" class="mini-list"></div></div>
+              <div class="panel"><div class="panel-title"><h3>Actividad reciente</h3><button class="link" onclick="openModule('inventory')">Ver movimientos →</button></div><div id="recentActivity"></div></div>
+            </div>
+            <div class="panel" style="margin-top:18px"><div class="panel-title"><div><h3>Operación de pedidos</h3><small style="color:var(--muted)">Pedidos recientes y estado de atención</small></div><button class="link" onclick="openModule('orders')">Ver historial completo →</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Pedido</th><th>Cliente</th><th>Fecha</th><th>Artículos</th><th>Total</th><th>Pago</th><th>Estado</th></tr></thead><tbody id="operationalOrdersTable"></tbody></table></div></div>
+          </section>
+
+          <section id="mod-purchases" class="module">
+            <div class="page-head"><div><h2>Órdenes de compra</h2><p>Proceso de abastecimiento: proveedor → artículos → cantidades → total → recepción.</p></div><div class="toolbar"><button class="primary" onclick="newPurchaseOrder()">+ Nueva orden</button></div></div>
+            <div class="po-layout">
+              <div>
+                <div class="panel"><div class="panel-title"><h3>1. Datos de la orden</h3><span class="pill">Documento interno</span></div><div class="form-grid-3"><div class="field"><label>Proveedor</label><select id="poSupplier" onchange="renderPoSupplierInfo()"></select></div><div class="field"><label>Fecha de emisión</label><input id="poDate" type="date"></div><div class="field"><label>Condición de pago</label><select id="poPayment"><option>Contado</option><option>Crédito 15 días</option><option>Crédito 30 días</option></select></div></div><div id="poSupplierInfo" style="margin-top:12px"></div></div>
+                <div class="panel"><div class="panel-title"><h3>2. Agregar artículos</h3><span id="poItemCount" class="pill">0 artículos</span></div><div class="po-toolbar"><select id="poProduct"></select><input id="poQty" type="number" min="1" value="1" placeholder="Cantidad"><input id="poBuyPrice" type="number" min="0" step="0.01" placeholder="Precio compra"><button class="primary" onclick="addPoItem()">+ Agregar</button></div><div id="poItems" class="po-items"></div></div>
+                <div class="panel"><div class="panel-title"><h3>Órdenes registradas</h3><input id="poSearch" style="max-width:280px" placeholder="Buscar OC, proveedor..." oninput="renderPurchaseOrders()"></div><div class="table-wrap"><table class="table"><thead><tr><th>Orden</th><th>Fecha</th><th>Proveedor</th><th>Artículos</th><th>Total</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="purchaseOrderTable"></tbody></table></div></div>
+              </div>
+              <div class="po-summary"><div class="panel"><div class="panel-title"><h3>3. Resumen</h3></div><div class="info-grid"><div class="info"><small>Artículos</small><strong id="poSummaryItems">0</strong></div><div class="info"><small>Unidades</small><strong id="poSummaryQty">0</strong></div><div class="info"><small>Subtotal</small><strong id="poSummarySubtotal">S/ 0.00</strong></div><div class="info"><small>IGV 18%</small><strong id="poSummaryTax">S/ 0.00</strong></div></div><hr style="border:0;border-top:1px solid var(--border);margin:16px 0"><small style="color:var(--muted)">Total de la orden</small><div id="poSummaryTotal" class="po-total">S/ 0.00</div><div class="form-actions"><button class="secondary full" onclick="clearPoDraft()">Limpiar</button><button class="primary full" onclick="savePurchaseOrder()">✓ Grabar orden de compra</button></div></div><div class="panel"><h3 style="margin-bottom:8px">Flujo recomendado</h3><p style="font-size:12px;color:var(--muted);line-height:1.7">1. Selecciona proveedor.<br>2. Agrega los artículos y cantidades.<br>3. Verifica precios y total.<br>4. Graba la orden.<br>5. Cuando llegue la mercadería, registra la recepción para actualizar el stock.</p></div></div>
+            </div>
+          </section>
+
+          <section id="mod-inventory" class="module">
+            <div class="page-head"><div><h2>Movimientos de stock</h2><p>Historial de entradas y salidas para mantener trazabilidad del inventario.</p></div><button class="export" onclick="exportInventory()">⬇ Excel</button></div>
+            <div class="kpi-grid"><div class="kpi"><small>Stock total</small><strong id="invUnits">0</strong><span>Unidades registradas</span></div><div class="kpi"><small>Entradas</small><strong id="invEntries">0</strong><span>Recepciones</span></div><div class="kpi"><small>Salidas</small><strong id="invExits">0</strong><span>Ventas/pedidos</span></div><div class="kpi"><small>Alertas</small><strong id="invAlerts">0</strong><span>Stock bajo o agotado</span></div></div>
+            <div class="panel table-wrap"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Documento</th><th>Producto</th><th>Cantidad</th><th>Usuario</th><th>Detalle</th></tr></thead><tbody id="inventoryTable"></tbody></table></div>
+          </section>
+
+          <section id="mod-employees" class="module">
+            <div class="page-head"><div><h2>Gestión de empleados</h2><p>Registro completo del personal autorizado para operar MarketGo.</p></div><div class="toolbar"><button class="primary" onclick="openEmployeeModal()">+ Registrar empleado</button></div></div>
+            <div class="panel table-wrap"><table class="table"><thead><tr><th>DNI</th><th>Empleado</th><th>Correo</th><th>Cargo</th><th>Área</th><th>Ingreso</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="employeeTable"></tbody></table></div>
+          </section>
+
+          <section id="mod-profile" class="module">
+            <div class="page-head">
+              <div>
+                <h2>Mi perfil</h2>
+                <p>Consulta la
+                  información de tu cuenta.</p>
+              </div>
+            </div>
+            <div class="profile-grid">
+              <div class="panel profile-box">
+                <div id="avatar" class="avatar">A</div>
+                <h3 id="profileName">Usuario</h3>
+                <p id="profileRole">Cliente
+                  MarketGo</p>
+                <p style="margin-top:8px">Cuenta activa</p>
+                <div class="form-actions"><button class="primary full"
+                    onclick="openModule('products')">Ir a
+                    productos</button></div>
+              </div>
+              <div class="panel">
+                <h3 style="margin-bottom:14px">Información personal</h3>
+                <div class="info-grid">
+                  <div class="info"><small>Identificación</small><strong
+                      id="profileDni">-</strong></div>
+                  <div class="info"><small>Nombre</small><strong
+                      id="profileFull">-</strong></div>
+                  <div class="info"><small>Correo electrónico</small><strong
+                      id="profileEmail">-</strong></div>
+                  <div class="info"><small>Tipo de usuario</small><strong
+                      id="profileRole2">-</strong></div>
+                  <div
+                    class="info"><small>Estado</small><strong>Activo</strong></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="mod-clients" class="module">
+            <div class="page-head">
+              <div><h2>Clientes</h2><p>Registro comercial de clientes de la tienda, con datos de contacto, dirección y comportamiento de compra.</p></div>
+              <div class="toolbar"><button class="primary" onclick="openClientModal()">+ Registrar cliente</button><button class="export" onclick="exportClients()">⬇ Excel</button></div>
+            </div>
+            <div class="demo-note">💡 Datos de demostración ficticios para la presentación académica. Puedes editarlos, registrar nuevos clientes y cambiar su estado.</div>
+            <div class="client-summary"><div class="client-card"><small>Clientes registrados</small><strong id="clientTotal">0</strong></div><div class="client-card"><small>Clientes activos</small><strong id="clientActive">0</strong></div><div class="client-card"><small>Clientes con crédito</small><strong id="clientCredit">0</strong></div><div class="client-card"><small>Compras acumuladas</small><strong id="clientSales">S/ 0.00</strong></div></div>
+            <div class="panel"><div class="toolbar"><input id="clientSearch" placeholder="Buscar por DNI/RUC, nombre, teléfono o correo..." oninput="renderClients()"><select id="clientTypeFilter" onchange="renderClients()"><option value="">Todos los tipos</option><option>Persona natural</option><option>Empresa</option></select><select id="clientStatusFilter" onchange="renderClients()"><option value="">Todos los estados</option><option>Activo</option><option>Inactivo</option></select></div></div>
+            <div class="panel table-wrap"><table class="table"><thead><tr><th>Documento</th><th>Cliente</th><th>Teléfono</th><th>Correo</th><th>Distrito</th><th>Tipo</th><th>Crédito</th><th>Compras</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="clientTable"></tbody></table></div>
+          </section>
+
+          <section id="mod-suppliers" class="module">
+            <div class="page-head">
+              <div>
+                <h2>Proveedores</h2>
+                <p>Cada proveedor está
+                  relacionado con productos de su categoría.</p>
+              </div>
+              <div class="toolbar"><button class="primary"
+                  onclick="openSupplierModal()">+ Nuevo</button><button
+                  class="export" onclick="exportSuppliers()">⬇
+                  Excel</button></div>
+            </div>
+            <div class="panel">
+              <div class="toolbar"><input id="supplierSearch"
+                  placeholder="Buscar proveedor, RUC o categoría..."
+                  oninput="renderSuppliers()"></div>
+            </div>
+            <div class="panel table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>RUC</th>
+                    <th>Razón
+                      social</th>
+                    <th>Teléfono</th>
+                    <th>Categoría</th>
+                    <th>Productos</th>
+                    <th>Puntualidad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="supplierTable"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="mod-reports" class="module">
+            <div class="page-head">
+              <div>
+                <h2>Reportes</h2>
+                <p>Descarga los datos del
+                  sistema en Excel o imprime/guarda como PDF.</p>
+              </div>
+              <div class="toolbar"><button class="export"
+                  onclick="exportReport()">⬇ Excel</button><button
+                  class="primary"
+                  onclick="printReport()">⬇
+                  PDF</button></div>
+            </div>
+            <div class="admin-grid">
+              <div class="stat"><small>Productos</small><strong
+                  id="reportProducts">0</strong></div>
+              <div
+                class="stat"><small>Categorías</small><strong id="reportCategories">0</strong></div>
+              <div class="stat"><small>Proveedores</small><strong
+                  id="reportSuppliers">0</strong></div>
+              <div class="stat"><small>Clientes</small><strong id="reportClients">0</strong></div>
+              <div class="stat"><small>Ofertas</small><strong
+                  id="reportOffers">0</strong></div>
+            </div>
+            <div class="panel">
+              <h3>Resumen de inventario</h3>
+              <div class="table-wrap">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Código</th>
+                      <th>Producto</th>
+                      <th>Categoría</th>
+                      <th>Proveedor</th>
+                      <th>Precio</th>
+                      <th>Stock</th>
+                      <th>Caducidad</th>
+                      <th>Lote</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reportTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section id="mod-admin-products" class="module">
+            <div class="page-head">
+              <div>
+                <h2>Administrar productos</h2>
+                <p>Nuevo,
+                  editar, eliminar y buscar.</p>
+              </div><button class="primary" onclick="openProductModal()">+ Nuevo
+                producto</button>
+            </div>
+            <div class="filters"><input id="adminProductSearch"
+                placeholder="Buscar..."
+                oninput="renderAdminProducts()"><select id="adminCatFilter"
+                onchange="renderAdminProducts()"></select><select
+                id="stockFilter" onchange="renderAdminProducts()">
+                <option value>Todo el stock</option>
+                <option value="low">Stock
+                  bajo</option>
+                <option value="out">Agotados</option>
+                <option value="expiry">Vencen en 30 días</option>
+              </select><button class="export" onclick="exportProducts()">⬇
+                Excel</button></div>
+            <div class="panel table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Proveedor</th>
+                    <th>Precio
+                      venta</th>
+                    <th>Stock</th>
+                    <th>Caducidad</th>
+                    <th>Lote</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="adminProductTable"></tbody>
+              </table>
+            </div>
+          </section>
+
+        </main>
+      </div>
+    </div>
+
+    <!-- MODALES -->
+    <div id="employeeModal" class="modal"><div class="modal-box"><div class="modal-head"><h3 id="employeeModalTitle">Registrar empleado</h3><button class="close" onclick="closeModal('employeeModal')">×</button></div><input id="editEmployeeIndex" type="hidden"><div class="form-grid-3"><div class="field"><label>DNI</label><input id="eDni" maxlength="8"></div><div class="field"><label>Nombres</label><input id="eName"></div><div class="field"><label>Apellidos</label><input id="eLast"></div><div class="field"><label>Correo</label><input id="eEmail" type="email"></div><div class="field"><label>Celular</label><input id="ePhone"></div><div class="field"><label>Cargo</label><select id="ePosition"><option>Cajero(a)</option><option>Almacenero(a)</option><option>Asistente de compras</option><option>Supervisor(a)</option><option>Administrador(a)</option></select></div><div class="field"><label>Área</label><select id="eArea"><option>Ventas</option><option>Almacén</option><option>Compras</option><option>Administración</option></select></div><div class="field"><label>Fecha de ingreso</label><input id="eHireDate" type="date"></div><div class="field"><label>Estado</label><select id="eState"><option>Activo</option><option>Inactivo</option><option>Vacaciones</option></select></div></div><div class="form-actions"><button class="secondary" onclick="closeModal('employeeModal')">Cancelar</button><button class="primary" onclick="saveEmployee()">Guardar empleado</button></div></div></div>
+    <div id="clientModal" class="modal"><div class="modal-box"><div class="modal-head"><h3 id="clientModalTitle">Registrar cliente</h3><button class="close" onclick="closeModal('clientModal')">×</button></div><input id="editClientIndex" type="hidden"><div class="grid2"><div class="field"><label>Tipo de cliente</label><select id="cType"><option>Persona natural</option><option>Empresa</option></select></div><div class="field"><label>DNI / RUC</label><input id="cDoc" maxlength="11"></div><div class="field"><label>Nombres / Razón social</label><input id="cName"></div><div class="field"><label>Apellidos / Nombre comercial</label><input id="cLast"></div><div class="field"><label>Celular</label><input id="cPhone"></div><div class="field"><label>Correo</label><input id="cEmail" type="email"></div><div class="field"><label>Dirección</label><input id="cAddress"></div><div class="field"><label>Distrito</label><select id="cDistrict"><option>San Juan de Lurigancho</option><option>San Martín de Porres</option><option>Los Olivos</option><option>Comas</option><option>Ate</option><option>Santa Anita</option><option>Villa El Salvador</option><option>Surco</option><option>Miraflores</option><option>La Molina</option></select></div><div class="field"><label>Condición de pago</label><select id="cPayment"><option>Contado</option><option>Crédito 15 días</option><option>Crédito 30 días</option></select></div><div class="field"><label>Límite de crédito</label><input id="cLimit" type="number" min="0" step="0.01"></div><div class="field"><label>Compras acumuladas</label><input id="cPurchases" type="number" min="0" step="0.01"></div><div class="field"><label>Estado</label><select id="cState"><option>Activo</option><option>Inactivo</option></select></div></div><div class="form-actions"><button class="secondary" onclick="closeModal('clientModal')">Cancelar</button><button class="primary" onclick="saveClient()">Guardar cliente</button></div></div></div>
+    <div id="supplierModal" class="modal">
+      <div class="modal-box">
+        <div class="modal-head">
+          <h3 id="supplierModalTitle">Nuevo
+            proveedor</h3><button class="close"
+            onclick="closeModal('supplierModal')">×</button>
+        </div><input id="editSupplierIndex" type="hidden">
+        <div class="grid2">
+          <div class="field"><label>RUC</label><input id="sRuc"></div>
+          <div class="field"><label>Razón social / Nombre
+              comercial</label><input id="sName"></div>
+          <div class="field"><label>Teléfono /
+              Celular</label><input id="sPhone"></div>
+          <div class="field"><label>Correo</label><input id="sEmail"></div>
+          <div class="field"><label>Dirección</label><input id="sAddress"></div>
+          <div class="field"><label>Contacto /
+              Vendedor</label><input id="sContact"></div>
+          <div class="field"><label>Días de entrega</label><input id="sDays"
+              type="number" min="0"></div>
+          <div class="field"><label>Condición de
+              pago</label><select id="sPayment">
+              <option>Contado</option>
+              <option>Crédito 15
+                días</option>
+              <option>Crédito 30 días</option>
+            </select></div>
+          <div class="field"><label>Categoría que provee</label><select
+              id="sCategory"></select></div>
+          <div class="field"><label>Puntualidad</label><select id="sRating">
+              <option>Bueno</option>
+              <option>Regular</option>
+              <option>Malo</option>
+            </select></div>
+          <div class="field"><label>Estado</label><select id="sState">
+              <option>Activo</option>
+              <option>Inactivo</option>
+            </select></div>
+        </div>
+        <div class="form-actions"><button class="secondary"
+            onclick="closeModal('supplierModal')">Cancelar</button><button
+            class="primary" onclick="saveSupplier()">Guardar</button></div>
+      </div>
+    </div>
+
+    <div id="productModal" class="modal">
+      <div class="modal-box">
+        <div class="modal-head">
+          <h3 id="productModalTitle">Nuevo
+            producto</h3><button class="close"
+            onclick="closeModal('productModal')">×</button>
+        </div><input id="editProductIndex" type="hidden">
+        <div class="grid2">
+          <div class="field"><label>Código / SKU</label><input id="pCode"></div>
+          <div class="field"><label>Nombre</label><input id="pName"></div>
+          <div class="field"><label>Descripción detallada</label><input id="pDesc"></div><div class="field"><label>Marca</label><input id="pBrand"></div><div class="field"><label>Presentación</label><input id="pPresentation" placeholder="Ej. 1 kg, 500 ml, x6"></div>
+          <div class="field"><label>Categoría</label><select
+              id="pCategory"></select></div>
+          <div class="field"><label>Proveedor</label><select
+              id="pSupplier"></select></div>
+          <div class="field"><label>Unidad</label><select id="pUnit">
+              <option>Unidad</option>
+              <option>Kg</option>
+              <option>Litro</option>
+              <option>Caja</option>
+            </select></div>
+          <div class="field"><label>Precio compra</label><input id="pBuy"
+              type="number" step="0.01"></div>
+          <div class="field"><label>Precio
+              venta</label><input id="pSell" type="number" step="0.01"></div>
+          <div class="field"><label>Stock
+              real</label><input id="pStock" type="number" min="0"></div>
+          <div class="field"><label>Stock mínimo</label><input id="pMin" type="number" min="0"></div><div class="field"><label>Código de barras</label><input id="pBarcode"></div><div class="field"><label>Lote</label><input id="pLot"></div><div class="field"><label>Fecha de caducidad</label><input id="pExpiry" type="date"></div><div class="field"><label>Almacenamiento</label><select id="pStorage"><option>Ambiente seco</option><option>Fresco / ventilado</option><option>Refrigerado</option><option>Congelado</option></select></div><div class="field"><label>Origen</label><input id="pOrigin" value="Perú"></div>
+        </div>
+        <div class="form-actions"><button class="secondary"
+            onclick="closeModal('productModal')">Cancelar</button><button
+            class="primary" onclick="saveProduct()">Guardar</button></div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <div id="printArea"></div>
+    
+  </body>
+
+</html>
