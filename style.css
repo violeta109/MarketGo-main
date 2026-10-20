@@ -1039,7 +1039,7 @@ button {
     box-shadow: 0 8px 30px #0003
 }
 
-/* RESPONSIVE */
+/* pantalla computadora*/
 @media(max-width:1150px) {
     .cards {
         grid-template-columns: repeat(3, 1fr)
@@ -1066,7 +1066,7 @@ button {
         grid-template-columns: repeat(2, 1fr)
     }
 }
-
+/* pantall computadora*/
 @media(max-width:850px) {
     .top {
         height: auto;
