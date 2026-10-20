@@ -1438,8 +1438,10 @@ function logout() {
   toast("Sesión cerrada");
 }
 function menuItem(id, label, icon) {
-  return `<button class="side-btn" data-module="${id}" onclick="openModule('${id}')">${icon} ${label}</button>`;
+  return `<button class="side-btn" data-module="${id}" 
+  onclick="openModule('${id}')">${icon} ${label}</button>`;
 }
+//acceso empleado
 function buildMenu() {
   let html =
     menuItem("home", "Inicio", "🏠") +
